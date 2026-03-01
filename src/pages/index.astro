@@ -2,48 +2,371 @@
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
+import FormattedDate from '../components/FormattedDate.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog'))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 4);
 ---
 
 <!doctype html>
 <html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<Header />
-		<main>
-			<h1>🧑‍🚀 Hello, Astronaut!</h1>
-			<p>
-				Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This template
-				serves as a lightweight, minimally-styled starting point for anyone looking to build a personal
-				website, blog, or portfolio with Astro.
-			</p>
-			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>Edit this page in <code>src/pages/index.astro</code></li>
-				<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-				<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-				<li>Check out the included blog posts in <code>src/content/blog/</code></li>
-				<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to
-				<a href="https://docs.astro.build/">read the docs</a>
-				or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out
-				<a href="https://github.com/Charca/astro-blog-template">astro-blog-template</a>
-				by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
-		</main>
-		<Footer />
-	</body>
+  <head>
+    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+  </head>
+  <body>
+    <Header />
+    <main>
+
+      <!-- Hero Section -->
+      <section class="hero">
+        <div class="hero-badge">🎮 Indie Devlog</div>
+        <h1 class="hero-title">
+          Building Games,<br />
+          <span class="gradient-text">Sharing the Journey</span>
+        </h1>
+        <p class="hero-desc">
+          Solo dev exploring co-op game development with <strong>Godot 4</strong>.<br />
+          Documenting every prototype, bug, and breakthrough along the way.
+        </p>
+        <div class="hero-cta">
+          <a href="/blog" class="btn-primary">📖 Read Devlogs</a>
+          <a href="/about" class="btn-secondary">About Me</a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat">
+            <span class="stat-num">{posts.length}+</span>
+            <span class="stat-label">Posts</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat">
+            <span class="stat-num">Godot 4</span>
+            <span class="stat-label">Engine</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat">
+            <span class="stat-num">Co-op</span>
+            <span class="stat-label">Focus</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Recent Posts Section -->
+      <section class="posts-section">
+        <div class="section-header">
+          <h2 class="section-title">
+            <span class="section-icon">📝</span> Recent Devlogs
+          </h2>
+          <a href="/blog" class="view-all">View all →</a>
+        </div>
+
+        <div class="posts-grid">
+          {posts.map((post) => (
+            <a href={`/blog/${post.id}/`} class="post-card">
+              <div class="post-card-body">
+                <span class="post-tag">🕹️ Devlog</span>
+                <h3 class="post-title">{post.data.title}</h3>
+                <p class="post-desc">{post.data.description}</p>
+              </div>
+              <div class="post-card-footer">
+                <time class="post-date">
+                  <FormattedDate date={post.data.pubDate} />
+                </time>
+                <span class="read-more">Read →</span>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+
+    </main>
+    <Footer />
+  </body>
 </html>
+
+<style>
+  /* ─── Layout ─── */
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  /* ─── Hero ─── */
+  .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 4rem 1rem 3rem;
+    gap: 1.25rem;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid rgba(99, 102, 241, 0.4);
+    color: #a5b4fc;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    padding: 0.35rem 1rem;
+    border-radius: 999px;
+    text-transform: uppercase;
+  }
+
+  .hero-title {
+    font-size: clamp(2.2rem, 6vw, 3.6rem);
+    font-weight: 800;
+    line-height: 1.15;
+    color: #f1f5f9;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, #818cf8 0%, #c084fc 50%, #f472b6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-desc {
+    font-size: 1.05rem;
+    color: #94a3b8;
+    max-width: 520px;
+    line-height: 1.8;
+    margin: 0;
+  }
+
+  .hero-desc strong {
+    color: #c084fc;
+  }
+
+  /* ─── CTA Buttons ─── */
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 0.5rem;
+  }
+
+  .btn-primary {
+    display: inline-block;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 0.75rem 1.75rem;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.35);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 28px rgba(99, 102, 241, 0.5);
+    color: #fff;
+  }
+
+  .btn-secondary {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #cbd5e1;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 0.75rem 1.75rem;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: background 0.2s ease, color 0.2s ease;
+    backdrop-filter: blur(6px);
+  }
+
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #f1f5f9;
+  }
+
+  /* ─── Hero Stats ─── */
+  .hero-stats {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 1rem;
+    padding: 1rem 2rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    backdrop-filter: blur(8px);
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+  }
+
+  .stat-num {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #a5b4fc;
+  }
+
+  .stat-label {
+    font-size: 0.72rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .stat-divider {
+    width: 1px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  /* ─── Posts Section ─── */
+  .posts-section {
+    margin-top: 1rem;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+
+  .section-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .section-icon {
+    font-size: 1.2rem;
+  }
+
+  .view-all {
+    font-size: 0.88rem;
+    color: #818cf8;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+
+  .view-all:hover {
+    color: #a5b4fc;
+  }
+
+  /* ─── Post Cards ─── */
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .post-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: rgba(30, 35, 55, 0.7);
+    border: 1px solid rgba(99, 102, 241, 0.18);
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-decoration: none;
+    transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+    backdrop-filter: blur(8px);
+    min-height: 180px;
+  }
+
+  .post-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(99, 102, 241, 0.5);
+    box-shadow: 0 8px 32px rgba(99, 102, 241, 0.18);
+  }
+
+  .post-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .post-tag {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #818cf8;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .post-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    line-height: 1.4;
+    margin: 0;
+  }
+
+  .post-desc {
+    font-size: 0.88rem;
+    color: #64748b;
+    line-height: 1.6;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .post-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .post-date {
+    font-size: 0.8rem;
+    color: #475569;
+  }
+
+  .read-more {
+    font-size: 0.82rem;
+    color: #818cf8;
+    font-weight: 600;
+    transition: color 0.2s;
+  }
+
+  .post-card:hover .read-more {
+    color: #a5b4fc;
+  }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 640px) {
+    .hero {
+      padding: 2.5rem 0.5rem 2rem;
+    }
+
+    .posts-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .hero-stats {
+      gap: 1rem;
+      padding: 0.75rem 1.25rem;
+    }
+  }
+</style>
